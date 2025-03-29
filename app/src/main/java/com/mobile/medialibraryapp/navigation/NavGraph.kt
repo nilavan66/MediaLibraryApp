@@ -8,6 +8,8 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 
 import com.mobile.medialibraryapp.view.LoginScreen
+import com.mobile.medialibraryapp.view.MediaDetailScreen
+import com.mobile.medialibraryapp.view.MediaGalleryScreen
 import com.mobile.medialibraryapp.view.SplashScreen
 
 @RequiresApi(Build.VERSION_CODES.O)
@@ -22,6 +24,13 @@ fun CreateNavigationGraph(navController: NavHostController) {
 
         composable(Screens.LOGIN) {
             LoginScreen(navController)
+        }
+        composable(Screens.MEDIA_GALLERY){
+            MediaGalleryScreen(navController)
+        }
+
+        composable(Screens.MEDIA_DETAIL){
+            MediaDetailScreen(navController)
         }
 
     }

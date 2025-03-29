@@ -1,3 +1,7 @@
 <resources>
-    <string name="app_name">MediaLibraryApp</string>
+    <string name="app_name">Media Library App</string>
+    <string name="enter_email">Please enter the email id</string>
+    <string name="enter_password">Please enter the password</string>
+    <string name="enter_valid_email">Please enter the valid email</string>
+    <string name="logout">Logout</string>
 </resources>

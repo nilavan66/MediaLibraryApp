@@ -17,6 +17,5 @@ class SharedPrefManager @Inject constructor(private val sharedPref: SharedPref) 
 
     var userid: String
         get() = sharedPref.getStringValue(USER_ID)
-        set(token) = sharedPref.setSharedValue(USER_ID, token)
-
+        set(userid) = sharedPref.setSharedValue(USER_ID, userid)
 }

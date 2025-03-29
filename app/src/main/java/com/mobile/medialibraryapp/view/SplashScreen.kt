@@ -15,6 +15,7 @@ import androidx.navigation.compose.rememberNavController
 import com.mobile.medialibraryapp.component.BaseComponent
 import com.mobile.medialibraryapp.navigation.Screens
 import com.mobile.medialibraryapp.navigation.navigateNew
+import com.mobile.medialibraryapp.state.SplashState
 import com.mobile.medialibraryapp.util.ThemePreview
 import com.mobile.medialibraryapp.viewmodel.SplashViewModel
 import kotlinx.coroutines.delay
@@ -25,10 +26,19 @@ fun SplashScreen(navController: NavHostController) {
 
     LaunchedEffect(key1 = Unit) {
         delay(3000)
-        navController.navigateNew(Screens.LOGIN)
+        if (viewModel.sharedPrefManager.userid.isNotEmpty() ){
+            navController.navigateNew(Screens.MEDIA_GALLERY)
+        }else{
+            navController.navigateNew(Screens.LOGIN)
+        }
+
     }
 
-    BaseComponent(viewModel = viewModel, stateObserver = { }) {
+    BaseComponent(viewModel = viewModel, stateObserver = { state ->
+        when (state) {
+            SplashState.Init ->{}
+        }
+    }) {
 
         ConstraintLayout(
             modifier = Modifier

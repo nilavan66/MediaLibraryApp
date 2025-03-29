@@ -39,7 +39,7 @@ class SharedPref @Inject constructor(@ApplicationContext private var context: Co
     fun clearSharedValue() {
         getPreferenceInstance()
         val editor = preference?.edit()
-        editor?.remove(Constants.SharedKey.USER_DATA)?.remove(Constants.SharedKey.TOKEN)
+        editor?.remove(Constants.SharedKey.USER_DATA)?.remove(Constants.SharedKey.USER_ID)
         editor?.apply()
     }
 

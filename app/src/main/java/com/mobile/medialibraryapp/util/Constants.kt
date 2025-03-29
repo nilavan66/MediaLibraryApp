@@ -19,6 +19,15 @@ interface Constants {
         const val INTERNAL_SERVER_ERROR =
             "Our server is under maintenance. We will resolve shortly!"
     }
+    object ScreenType{
+        var SCREEN_TYPE = "screenType"
+        var DATA= ""
+        const val IMAGE_VIEW ="image_view"
+        const val AUDIO_VIEW = "audio_view"
+        const val VIDEO_VIEW= "video_view"
 
+
+
+    }
 }
 

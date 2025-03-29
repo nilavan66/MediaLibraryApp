@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1068136036808",
+    "project_id": "medialibraryapp-n66",
+    "storage_bucket": "medialibraryapp-n66.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1068136036808:android:07a678bfc79ab1b4eba8fd",
+        "android_client_info": {
+          "package_name": "com.mobile.medialibraryapp"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCUnwjOevwESnZcNhIPXSpXgNGgc3weYqY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
