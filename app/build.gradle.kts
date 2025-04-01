@@ -5,7 +5,8 @@ plugins {
     kotlin("kapt")
     id("dagger.hilt.android.plugin")
     id("com.google.devtools.ksp")
-    alias(libs.plugins.google.gms.google.services)
+    //alias(libs.plugins.google.gms.google.services)
+    id ("com.google.gms.google-services")
 }
 
 android {
@@ -29,6 +30,7 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+            signingConfig = signingConfigs.getByName("debug")
         }
     }
     compileOptions {
@@ -40,6 +42,14 @@ android {
     }
     buildFeatures {
         compose = true
+    }
+}
+
+configurations.all {
+    resolutionStrategy {
+        force ("io.grpc:grpc-okhttp:1.55.1")
+        force ("io.grpc:grpc-core:1.55.1")
+        force ("io.grpc:grpc-api:1.55.1")
     }
 }
 
@@ -55,6 +65,7 @@ dependencies {
     implementation(libs.androidx.material3)
     implementation(libs.androidx.espresso.core)
     implementation(libs.firebase.auth)
+    implementation(libs.firebase.storage)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -87,13 +98,20 @@ dependencies {
     //Compose Constraint Layout
     implementation(libs.androidx.constraintlayout.compose)
 
+    //RoomDB
     implementation(libs.androidx.room.runtime)
     ksp(libs.androidx.room.compiler)
     implementation(libs.androidx.room.paging)
+    implementation (libs.androidx.room.ktx)
 
     implementation (platform(libs.firebase.bom))
     implementation (libs.google.firebase.auth)
     implementation (libs.firebase.firestore)
+    implementation (libs.play.services.auth)
+    implementation ("com.google.firebase:firebase-appcheck-playintegrity:18.0.0")
+    implementation ("io.grpc:grpc-okhttp:1.55.1")
+    implementation ("io.grpc:grpc-core:1.55.1")
+    implementation ("io.grpc:grpc-api:1.55.1")
 
     //Media3
     implementation (libs.androidx.media3.exoplayer)

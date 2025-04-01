@@ -1,10 +1,13 @@
 package com.mobile.medialibraryapp
 
+import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.viewModels
 import androidx.annotation.Keep
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.WindowInsets
@@ -21,6 +24,8 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.mobile.medialibraryapp.navigation.CreateNavigationGraph
 import com.mobile.medialibraryapp.ui.theme.MediaLibraryAppTheme
+import com.mobile.medialibraryapp.util.Constants.Permission.STORAGE_PERMISSION_REQUEST_CODE
+import com.mobile.medialibraryapp.viewmodel.MediaUploadViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -28,6 +33,7 @@ import dagger.hilt.android.AndroidEntryPoint
 class MainActivity : ComponentActivity() {
 
     private lateinit var navController: NavHostController
+
 
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -45,4 +51,5 @@ class MainActivity : ComponentActivity() {
             }
         }
     }
+
 }

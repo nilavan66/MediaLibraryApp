@@ -7,6 +7,8 @@ import android.net.NetworkCapabilities
 
 import android.os.Parcelable
 import android.provider.Settings
+import java.text.SimpleDateFormat
+import java.util.Locale
 
 fun Context.hasNetworkConnection(): Boolean {
     val connectivityManager =
@@ -66,5 +68,14 @@ fun String.validatePassword(): String? {
         !this.any { it.isDigit() } -> "Password must contain at least one digit"
         !this.any { it in "@#\$%^&+=!" } -> "Password must contain at least one special character (@#\$%^&+=!)"
         else -> null // Password is valid
+    }
+}
+
+fun String.parseDateToMillis(): Long {
+    return try {
+        val formatter = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale.getDefault())
+        formatter.parse(this)?.time ?: 0L
+    } catch (e: Exception) {
+        0L
     }
 }

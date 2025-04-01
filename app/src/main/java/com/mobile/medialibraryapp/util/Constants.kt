@@ -22,12 +22,13 @@ interface Constants {
     object ScreenType{
         var SCREEN_TYPE = "screenType"
         var DATA= ""
-        const val IMAGE_VIEW ="image_view"
-        const val AUDIO_VIEW = "audio_view"
-        const val VIDEO_VIEW= "video_view"
+        const val IMAGE ="image"
+        const val AUDIO = "audio"
+        const val VIDEO= "video"
+    }
 
-
-
+    object Permission{
+        const val STORAGE_PERMISSION_REQUEST_CODE = 1001
     }
 }
 

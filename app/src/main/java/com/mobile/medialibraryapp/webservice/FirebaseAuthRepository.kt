@@ -11,6 +11,7 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.tasks.await
+import timber.log.Timber
 import javax.inject.Inject
 
 class FirebaseAuthRepository @Inject constructor(
@@ -29,7 +30,14 @@ class FirebaseAuthRepository @Inject constructor(
             override suspend fun fetchData(): AuthResult {
                 return firebaseAuth.signInWithEmailAndPassword(
                     request.email, request.password
-                ).await()
+                ).addOnCompleteListener{task->
+                    if (task.isSuccessful) {
+                        val user = FirebaseAuth.getInstance().currentUser
+                        Timber.d("LoginSuccess: Logged in as ${user?.uid}")
+                    } else {
+                        Timber.e("LoginError: ${task.exception?.message}")
+                    }
+                }.await()
             }
         }.asFlow()
     }
@@ -39,8 +47,8 @@ class FirebaseAuthRepository @Inject constructor(
             baseFlow = baseFlow, sharedPrefManager = sharedPrefManager, context = context
         ) {
             override suspend fun fetchData(): Boolean {
-                firebaseAuth.signOut() // Firebase logout
-                sharedPrefManager.clearData() // Clear local storage
+                firebaseAuth.signOut()
+                //sharedPrefManager.clearData()
 
                 return firebaseAuth.currentUser == null
             }

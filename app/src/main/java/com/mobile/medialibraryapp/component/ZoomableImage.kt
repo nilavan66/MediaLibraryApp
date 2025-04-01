@@ -70,7 +70,7 @@ fun ZoomableImage(modifier: Modifier = Modifier, imageUrl: String) {
                 contentDescription = null,
                 modifier = Modifier
                     .fillMaxSize()
-                    .align(Alignment.Center) // keep the image centralized into the Box
+                    .align(Alignment.Center)
                     .graphicsLayer(
                         scaleX = scale,
                         scaleY = scale,

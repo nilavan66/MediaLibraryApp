@@ -12,6 +12,7 @@ import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
+import com.google.firebase.auth.FirebaseAuth
 import com.mobile.medialibraryapp.component.BaseComponent
 import com.mobile.medialibraryapp.navigation.Screens
 import com.mobile.medialibraryapp.navigation.navigateNew
@@ -24,21 +25,26 @@ import kotlinx.coroutines.delay
 fun SplashScreen(navController: NavHostController) {
     val viewModel: SplashViewModel = hiltViewModel()
 
+    val auth = FirebaseAuth.getInstance()
+    // Use LaunchedEffect to delay navigation after the splash screen
     LaunchedEffect(key1 = Unit) {
-        delay(3000)
-        if (viewModel.sharedPrefManager.userid.isNotEmpty() ){
-            navController.navigateNew(Screens.MEDIA_GALLERY)
-        }else{
-            navController.navigateNew(Screens.LOGIN)
-        }
+        delay(3000)  // 3 seconds delay (equivalent to SPLASH_SCREEN)
 
+        // Check if the user is logged in
+        if (auth.currentUser != null) {
+            // Navigate to MainActivity (or Media Gallery in your case)
+            navController.navigate(Screens.MEDIA_GALLERY) {
+                popUpTo(Screens.SPLASH) { inclusive = true }
+            }
+        } else {
+            // Navigate to Login screen
+            navController.navigate(Screens.LOGIN) {
+                popUpTo(Screens.SPLASH) { inclusive = true }
+            }
+        }
     }
 
-    BaseComponent(viewModel = viewModel, stateObserver = { state ->
-        when (state) {
-            SplashState.Init ->{}
-        }
-    }) {
+    BaseComponent(viewModel = viewModel, stateObserver = {}) {
 
         ConstraintLayout(
             modifier = Modifier

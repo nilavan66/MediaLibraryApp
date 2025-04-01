@@ -33,7 +33,7 @@ import com.mobile.medialibraryapp.viewmodel.MediaGalleryViewModel
 fun TopBarComponent(
     modifier: Modifier = Modifier,
     title: String,
-    showBackButton: Boolean = false,
+    showBackButton: Boolean = true,
     navController: NavHostController,
     navigate: () -> Unit = { navController.navigateUp() },
     menuItems: List<Pair<String, () -> Unit>> = emptyList()
@@ -77,7 +77,7 @@ fun TopBarComponent(
                                 text = { Text(text = label, color = ColorIcon) },
                                 onClick = {
                                     expanded = false
-                                    action() // Execute the associated function
+                                    action()
                                 }
                             )
                         }
