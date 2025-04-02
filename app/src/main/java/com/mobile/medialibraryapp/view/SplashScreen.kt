@@ -3,16 +3,19 @@ package com.mobile.medialibraryapp.view
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.google.firebase.auth.FirebaseAuth
+import com.mobile.medialibraryapp.R
 import com.mobile.medialibraryapp.component.BaseComponent
 import com.mobile.medialibraryapp.navigation.Screens
 import com.mobile.medialibraryapp.navigation.navigateNew
@@ -26,18 +29,18 @@ fun SplashScreen(navController: NavHostController) {
     val viewModel: SplashViewModel = hiltViewModel()
 
     val auth = FirebaseAuth.getInstance()
-    // Use LaunchedEffect to delay navigation after the splash screen
-    LaunchedEffect(key1 = Unit) {
-        delay(3000)  // 3 seconds delay (equivalent to SPLASH_SCREEN)
 
-        // Check if the user is logged in
+    LaunchedEffect(key1 = Unit) {
+        delay(3000)
+
+
         if (auth.currentUser != null) {
-            // Navigate to MainActivity (or Media Gallery in your case)
+
             navController.navigate(Screens.MEDIA_GALLERY) {
                 popUpTo(Screens.SPLASH) { inclusive = true }
             }
         } else {
-            // Navigate to Login screen
+
             navController.navigate(Screens.LOGIN) {
                 popUpTo(Screens.SPLASH) { inclusive = true }
             }
@@ -53,7 +56,8 @@ fun SplashScreen(navController: NavHostController) {
         ) {
             val (ivSplash) = createRefs()
             Text(
-                text = "Hello World!",
+                text = stringResource(R.string.app_name),
+                style = MaterialTheme.typography.headlineLarge,
                 color = Color.White,
                 modifier = Modifier.constrainAs(ivSplash) {
                     centerVerticallyTo(parent)

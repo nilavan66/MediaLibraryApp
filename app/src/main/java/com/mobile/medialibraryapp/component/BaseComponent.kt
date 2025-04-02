@@ -62,7 +62,7 @@ fun <State> BaseComponent(
                     }
 
                     is BaseState.UnAuthorize -> {
-                        // Navigate to Login
+
                     }
 
                     is BaseState.ShowNetworkAlert -> {

@@ -1,5 +1,8 @@
 {
   "projects": {
-    "default": "medialibraryapp-n66"
-  }
+    "default": "medialibraryapp-n66",
+    "main": "medialibraryapp-n66"
+  },
+  "targets": {},
+  "etags": {}
 }

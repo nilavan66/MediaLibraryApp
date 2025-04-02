@@ -19,7 +19,7 @@ val LightSurface = Color(0xFFFFFFFF)   // Pure White
 val LightOnPrimary = Color(0xFFFFFFFF) // White Text on Primary
 val LightOnBackground = Color(0xFF000000) // Dark Gray Text
 
-// Dark Theme Colors (Eye-Friendly & Elegant)
+// Dark Theme Colors
 val DarkPrimary = Color(0xFF88C0D0)    // Muted Teal
 val DarkSecondary = Color(0xFF81A1C1)  // Desaturated Blue
 val DarkTertiary = Color(0xFFB48EAD)   // Subtle Purple-Pink

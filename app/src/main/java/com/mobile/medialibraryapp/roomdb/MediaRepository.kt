@@ -1,6 +1,9 @@
 package com.mobile.medialibraryapp.roomdb
 
 import android.util.Log
+import androidx.paging.Pager
+import androidx.paging.PagingConfig
+import androidx.paging.PagingData
 import com.google.firebase.firestore.DocumentChange
 import com.google.firebase.firestore.FirebaseFirestore
 import com.mobile.medialibraryapp.dataclass.MediaEntity
@@ -23,65 +26,21 @@ class MediaRepository @Inject constructor(
         return mediaDao.getAllMedia()
     }
 
-    suspend fun getMediaById(documentId: String): MediaEntity? = mediaDao.getMediaById(documentId)
-
-
-    suspend fun insertMedia(media: MediaEntity) {
-        mediaDao.insertMedia(media)
+    fun getPagedMedia(): Flow<PagingData<MediaEntity>> {
+        return Pager(
+            config = PagingConfig(
+                pageSize = 10,
+                enablePlaceholders = false
+            ),
+            pagingSourceFactory = { mediaDao.getPagedMedia() }
+        ).flow
     }
+
+    suspend fun getMediaById(documentId: String): MediaEntity? = mediaDao.getMediaById(documentId)
 
     suspend fun deleteAllMedia(){
         mediaDao.deleteAll()
     }
-
-    /*fun fetchMediaFromFirestore(viewModelScope: CoroutineScope) {
-
-        firestore.collection("media_data")
-            .addSnapshotListener { snapshots, error ->
-                if (error != null) {
-                    Log.e("Firestore", "Error listening for updates", error)
-                    return@addSnapshotListener
-                }
-
-                snapshots?.documentChanges?.forEach { change ->
-                    val document = change.document
-                    val documentId = document.id
-
-                    when (change.type) {
-                        DocumentChange.Type.ADDED -> {
-                            val name = document.getString("name") ?: "Unknown"
-                            val mediaType = document.getString("contentType") ?: "Unknown"
-                            val size = document.getLong("size") ?: 0L
-                            val uploadDate = document.getTimestamp("timeCreated")?.seconds ?: 0L
-                            val mediaUrl = document.getString("downloadUrl") ?: ""
-
-                            val mediaEntity = MediaEntity(
-                                documentId = documentId,
-                                name = name,
-                                mediaType = mediaType,
-                                size = size,
-                                uploadDate = uploadDate,
-                                mediaUrl = mediaUrl
-                            )
-
-                            viewModelScope.launch(Dispatchers.IO) {
-                                val exists = mediaDao.isMediaExists(documentId) > 0
-                                if (!exists) {
-                                    mediaDao.insertMedia(mediaEntity)
-                                }
-                            }
-                        }
-
-                        DocumentChange.Type.REMOVED -> {
-                            viewModelScope.launch(Dispatchers.IO) {
-                                mediaDao.deleteMediaByDocumentId(documentId)
-                            }
-                        }
-                        else -> {}
-                    }
-                }
-            }
-    }*/
 
     fun fetchMediaFromFirestore(viewModelScope: CoroutineScope) {
         firestore.collection("media_data")
@@ -127,7 +86,6 @@ class MediaRepository @Inject constructor(
                 }
             }
     }
-
 
 }
 

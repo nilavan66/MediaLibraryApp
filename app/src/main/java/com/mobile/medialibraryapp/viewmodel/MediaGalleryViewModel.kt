@@ -29,12 +29,13 @@ class MediaGalleryViewModel @Inject constructor(private val authRepository: Fire
         Timber.tag("AuthCheck").d("User: ${user?.uid ?: "Not logged in"}")
 
         if (user == null) {
-            // Handle unauthenticated user (e.g., redirect to login screen)
+
             Timber.tag("AuthCheck").e("User is not authenticated!")
         }
     }
 
     fun logout() {
+        showProgressBar()
         viewModelScope.launch {
             authRepository.logoutUser(_baseState).collect { it ->
                 when (it) {
@@ -45,10 +46,13 @@ class MediaGalleryViewModel @Inject constructor(private val authRepository: Fire
                         } else {
                             MediaGalleryState.ShowMessage("Logout failed! Try again")
                         }
-
+                        dismissProgressBar()
                     }
 
-                    is State.Error -> showToast(it.message)
+                    is State.Error -> {
+                        showToast(it.message)
+                        dismissProgressBar()
+                    }
 
                     else -> dismissProgressBar()
                 }

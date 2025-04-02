@@ -22,6 +22,7 @@ class LoginViewModel @Inject constructor(private val authRepository: FirebaseAut
         }
 
     fun login(loginRequest: LoginRequest) {
+        showProgressBar()
         viewModelScope.launch {
             authRepository.loginUser(loginRequest, _baseState).collect {
                 when (it) {

@@ -103,15 +103,17 @@ dependencies {
     ksp(libs.androidx.room.compiler)
     implementation(libs.androidx.room.paging)
     implementation (libs.androidx.room.ktx)
-
+    implementation ("androidx.paging:paging-compose:3.3.6")
+    implementation ("androidx.paging:paging-runtime:3.3.6")
+    implementation ("androidx.compose.material3:material3:1.3.1")
     implementation (platform(libs.firebase.bom))
     implementation (libs.google.firebase.auth)
     implementation (libs.firebase.firestore)
     implementation (libs.play.services.auth)
     implementation ("com.google.firebase:firebase-appcheck-playintegrity:18.0.0")
-    implementation ("io.grpc:grpc-okhttp:1.55.1")
-    implementation ("io.grpc:grpc-core:1.55.1")
-    implementation ("io.grpc:grpc-api:1.55.1")
+    implementation ("io.grpc:grpc-okhttp:1.62.2")
+    implementation ("io.grpc:grpc-core:1.62.2")
+    implementation ("io.grpc:grpc-api:1.62.2")
 
     //Media3
     implementation (libs.androidx.media3.exoplayer)

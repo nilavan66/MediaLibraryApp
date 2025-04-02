@@ -4,12 +4,8 @@ import android.app.Activity
 import android.content.Context
 import android.graphics.Bitmap
 import android.media.MediaMetadataRetriever
+import android.widget.Toast
 import androidx.activity.compose.BackHandler
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.slideInVertically
-import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
@@ -25,13 +21,13 @@ import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.FloatingActionButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -50,6 +46,8 @@ import androidx.constraintlayout.compose.Dimension
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
+import androidx.paging.LoadState
+import androidx.paging.compose.collectAsLazyPagingItems
 import coil.compose.AsyncImage
 import com.mobile.medialibraryapp.R
 import com.mobile.medialibraryapp.component.BaseComponent
@@ -80,11 +78,13 @@ import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
 
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MediaGalleryScreen(navController: NavHostController) {
     val mediaViewModel: MediaViewModel = hiltViewModel()
-    val mediaList by mediaViewModel.mediaList.collectAsState()
+
+    val mediaList = mediaViewModel.mediaList.collectAsLazyPagingItems()
 
     val viewModel: MediaGalleryViewModel = hiltViewModel()
 
@@ -93,25 +93,12 @@ fun MediaGalleryScreen(navController: NavHostController) {
 
     val configuration = LocalConfiguration.current
     val columns = if (configuration.screenWidthDp < 600) 3 else 5
+    var searchVisible by remember { mutableStateOf(false) }
 
-    val lazyGridState = rememberLazyGridState()
-    var fabVisible by remember { mutableStateOf(true) }
-    val coroutineScope = rememberCoroutineScope()
+    var searchText by remember { mutableStateOf("") }
 
-    val isScrollable by remember(lazyGridState) {
-        derivedStateOf { lazyGridState.layoutInfo.totalItemsCount > columns }
-    }
-    // Observe scrolling and hide FAB after 5 seconds
-    LaunchedEffect(remember { derivedStateOf { lazyGridState.firstVisibleItemIndex } }) {
-        if (isScrollable) {
-            fabVisible = true // Show FAB when scrolling starts
-            coroutineScope.launch {
-                delay(5000) // Wait for 5 seconds
-                fabVisible = false // Hide FAB
-            }
-        } else {
-            fabVisible = true // Keep FAB visible if list is not scrollable
-        }
+    LaunchedEffect(searchText) {
+        mediaViewModel.setSearchQuery(searchText)
     }
 
     BaseComponent(viewModel = viewModel, stateObserver = { state ->
@@ -130,6 +117,8 @@ fun MediaGalleryScreen(navController: NavHostController) {
             TopBarComponent(
                 title = "Dashboard",
                 showBackButton = false,
+                showSearchButton = true,
+                isSearchVisible = searchVisible,
                 modifier = Modifier
                     .fillMaxWidth()
                     .constrainAs(header) {
@@ -137,8 +126,19 @@ fun MediaGalleryScreen(navController: NavHostController) {
                         top.linkTo(parent.top)
                     },
                 menuItems = listOf("Logout" to { viewModel.logout() }),
-                navController = navController
+                navController = navController,
+                onSearchTextChange = { searchText = it },
+                searchText = searchText,
             )
+
+            val filteredList by remember {
+                derivedStateOf {
+                    mediaList.itemSnapshotList.items.filter {
+                        it.name.contains(searchText, ignoreCase = true) ||
+                                it.mediaType.contains(searchText, ignoreCase = true)
+                    }
+                }
+            }
 
             LazyVerticalGrid(columns = GridCells.Fixed(columns),
                 contentPadding = PaddingValues(Dp12),
@@ -152,33 +152,47 @@ fun MediaGalleryScreen(navController: NavHostController) {
                         height = Dimension.fillToConstraints
                         bottom.linkTo(parent.bottom)
                     }) {
-                items(mediaList.size) {
-                    CardContainer(navController, documentId = mediaList[it].documentId)
+
+                if (mediaList.loadState.refresh is LoadState.Loading) {
+                    item {
+                        CircularProgressIndicator()
+                    }
+                }
+
+                items(mediaList.itemCount) { index ->
+
+                    val media = mediaList[index]
+                    media?.let {
+                        CardContainer(navController, documentId = it.documentId)
+                    }
+                }
+
+                if (mediaList.loadState.append is LoadState.Loading) {
+                    item {
+                        CircularProgressIndicator()
+                    }
                 }
             }
 
-            AnimatedVisibility(
-                visible = fabVisible,
-                modifier = Modifier.constrainAs(fab) {
-                    end.linkTo(parent.end)
-                    bottom.linkTo(parent.bottom)
-                },
-                enter = fadeIn() + slideInVertically(initialOffsetY = { it }),
-                exit = fadeOut() + slideOutVertically(targetOffsetY = { it })
-            ) {
-                FloatingActionButton(
-                    modifier = Modifier
-                        .padding(end = Dp16, bottom = Dp16),
-                    content = {
-                        Icon(painterResource(R.drawable.ic_upload), contentDescription = null)
+            FloatingActionButton(
+                modifier = Modifier
+                    .padding(Dp16)
+                    .constrainAs(fab) {
+                        end.linkTo(parent.end)
+                        bottom.linkTo(parent.bottom)
                     },
-                    elevation = FloatingActionButtonDefaults.elevation(Dp8),
-                    onClick = { navController.navigateTo(Screens.MEDIA_UPLOAD) })
-            }
+                content = {
+                    Icon(painterResource(R.drawable.ic_upload), contentDescription = null)
+                },
+                elevation = FloatingActionButtonDefaults.elevation(Dp8),
+                onClick = { navController.navigateTo(Screens.MEDIA_UPLOAD) })
+
         }
     }
     BackHandler {
         activity?.finish()
+            navController.popBackStack()
+
     }
 }
 
@@ -192,7 +206,7 @@ private fun CardContainer(navController: NavHostController, documentId: String) 
 
     LaunchedEffect(documentId) {
         media = viewModel.getMediaById(documentId)
-        // If it's a video, extract the thumbnail
+
         media?.let {
             if (it.mediaType.startsWith("video")) {
                 coroutineScope.launch(Dispatchers.IO) {
@@ -202,16 +216,13 @@ private fun CardContainer(navController: NavHostController, documentId: String) 
                     }
                 }
             } else {
-                thumbnailUri = it.mediaUrl // Directly use image URL
+                thumbnailUri = it.mediaUrl
             }
         }
     }
 
-
-
-
     val (placeholder, screenType) = when (media?.mediaType) {
-        "image/jpeg", "image/png" -> R.drawable.ic_image to IMAGE
+        "image/jpeg", "image/webp", "image/png" -> R.drawable.ic_image to IMAGE
         "audio/mpeg", "audio/wav" -> R.drawable.ic_music to AUDIO
         "video/mp4", "video/mkv" -> R.drawable.ic_video to VIDEO
         else -> R.drawable.ic_error to null
@@ -221,18 +232,28 @@ private fun CardContainer(navController: NavHostController, documentId: String) 
         modifier = Modifier
             .size(Dp120)
             .aspectRatio(1f)
-            .clickable(enabled = media != null) {
-                screenType?.let {
-                    SCREEN_TYPE = it
-                    navController.navigate("${Screens.MEDIA_DETAIL}/$documentId")
-                } ?: BaseState.ShowToast("Media unavailable")
+            .clickable {
+                if (screenType == null || media?.mediaUrl.isNullOrEmpty()) {
+                    Toast.makeText(context, "Media Unavailable", Toast.LENGTH_SHORT).show()
+
+                } else {
+                    screenType.let {
+                        SCREEN_TYPE = it
+                        navController.navigate("${Screens.MEDIA_DETAIL}/$documentId")
+                    }
+                }
+
             },
         elevation = CardDefaults.cardElevation(Dp2),
         shape = RoundedCornerShape(Dp8),
         colors = CardDefaults.cardColors(containerColor = Color.White)
     ) {
         AsyncImage(
-            model = thumbnailUri ?: media?.mediaUrl,
+            model = if (screenType == null || media?.mediaUrl.isNullOrEmpty()) {
+                R.drawable.ic_error
+            } else {
+                thumbnailUri ?: media?.mediaUrl
+            },
             placeholder = painterResource(placeholder),
             contentDescription = null,
             contentScale = ContentScale.Crop,
@@ -244,12 +265,12 @@ private fun CardContainer(navController: NavHostController, documentId: String) 
 private fun getVideoThumbnailUri(videoUrl: String, context: Context): String? {
     return try {
         val retriever = MediaMetadataRetriever()
-        retriever.setDataSource(videoUrl, HashMap()) // HashMap required for URL sources
-        val bitmap = retriever.frameAtTime // Get frame at default position
+        retriever.setDataSource(videoUrl, HashMap())
+        val bitmap = retriever.frameAtTime
         retriever.release()
 
         bitmap?.let {
-            saveBitmapToCache(it, context) // Store the image and return its URI
+            saveBitmapToCache(it, context)
         }
     } catch (e: Exception) {
         e.printStackTrace()
@@ -257,9 +278,6 @@ private fun getVideoThumbnailUri(videoUrl: String, context: Context): String? {
     }
 }
 
-/**
- * Saves a Bitmap to cache and returns its URI.
- */
 private fun saveBitmapToCache(bitmap: Bitmap, context: Context): String? {
     return try {
         val file = File(context.cacheDir, "video_thumbnail_${System.currentTimeMillis()}.jpg")
@@ -267,7 +285,7 @@ private fun saveBitmapToCache(bitmap: Bitmap, context: Context): String? {
         bitmap.compress(Bitmap.CompressFormat.JPEG, 85, fos)
         fos.flush()
         fos.close()
-        file.toURI().toString() // Return file URI
+        file.toURI().toString()
     } catch (e: IOException) {
         e.printStackTrace()
         null

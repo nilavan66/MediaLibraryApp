@@ -1,8 +1,10 @@
 package com.mobile.medialibraryapp.view
 
 import android.Manifest
+import android.content.Context
 import android.net.Uri
 import android.os.Build
+import android.provider.OpenableColumns
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Arrangement
@@ -61,8 +63,10 @@ fun MediaUploadScreen(navController: NavHostController) {
     val permissionGranted by viewModel.permissionGranted.collectAsState()
 
     var selectedUri by remember { mutableStateOf<Uri?>(null) }
+    var selectedFileName by remember { mutableStateOf("No file selected") }
 
-    // Handle permission requests
+    val context = LocalContext.current
+
     val permissionLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestMultiplePermissions()
     ) { permissions ->
@@ -70,14 +74,16 @@ fun MediaUploadScreen(navController: NavHostController) {
         viewModel.setPermissionState(allGranted)
     }
 
-    // File picker
     val filePickerLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent()
     ) { uri ->
         if (uri != null) {
             selectedUri = uri
+            selectedFileName = getFileName(context, uri)
         }
     }
+
+
 
     BaseComponent(viewModel = viewModel, stateObserver = { state ->
         when (state) {
@@ -116,11 +122,10 @@ fun MediaUploadScreen(navController: NavHostController) {
                         centerHorizontallyTo(parent)
                     },
                 progress = progress,
-                selectedFile = selectedUri?.lastPathSegment ?: "No file selected",
+                selectedFile = selectedFileName,
                 onSelectFileClick = {
-                    if (permissionGranted) {
-                        filePickerLauncher.launch("audio/mp3, video/mp4, image/jpeg")
-                    } else {
+                    if (!permissionGranted) {
+
                         permissionLauncher.launch(
                             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
                                 arrayOf(
@@ -128,15 +133,18 @@ fun MediaUploadScreen(navController: NavHostController) {
                                     Manifest.permission.READ_MEDIA_VIDEO,
                                     Manifest.permission.READ_MEDIA_AUDIO
                                 )
-                            } else {
+                            }
+                            else {
                                 arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE)
                             }
                         )
+                    } else {
+                        filePickerLauncher.launch("*/*")
                     }
                 },
                 onUploadClick = {
                     selectedUri?.let { uri ->
-                        viewModel.uploadMedia(uri)
+                        viewModel.uploadMedia(uri, selectedFileName)
                     } ?: viewModel.showToast("Please select a file first")
                 }
             )
@@ -157,7 +165,7 @@ fun UploadCard(
     modifier: Modifier = Modifier,
     progress: Float = 0.2f,
     selectedFile: String,
-    onSelectFileClick: () -> Unit,  // New: Callback for file selection
+    onSelectFileClick: () -> Unit,
     onUploadClick: () -> Unit
 ) {
     val colors = MaterialTheme.colorScheme
@@ -191,7 +199,7 @@ fun UploadCard(
         ) {
             Spacer(modifier = Modifier.weight(0.2f))
 
-            // Upload Icon
+
             Icon(
                 painterResource(id = R.drawable.ic_upload),
                 contentDescription = "Upload Icon",
@@ -201,7 +209,7 @@ fun UploadCard(
 
             Spacer(modifier = Modifier.weight(0.2f))
 
-            // Upload Text
+
             Text(
                 text = "Upload Media",
                 fontSize = Sp18,
@@ -212,7 +220,7 @@ fun UploadCard(
 
             Spacer(modifier = Modifier.weight(0.2f))
 
-            // **New**: File Selection Button
+
             Button(
                 onClick = onSelectFileClick,
                 shape = RoundedCornerShape(12.dp),
@@ -221,7 +229,7 @@ fun UploadCard(
                 Text(text = "Select File")
             }
 
-            // **New**: Display selected file name
+
             if (selectedFile != "No file selected") {
                 Spacer(modifier = Modifier.height(8.dp))
                 Text(
@@ -233,7 +241,7 @@ fun UploadCard(
 
             Spacer(modifier = Modifier.weight(0.2f))
 
-            // Upload Progress Bar
+
             LinearProgressIndicator(
                 progress = { progress },
                 modifier = Modifier
@@ -245,7 +253,7 @@ fun UploadCard(
 
             Spacer(modifier = Modifier.weight(0.2f))
 
-            // Upload Button
+
             Button(
                 onClick = onUploadClick,
                 shape = RoundedCornerShape(12.dp),
@@ -260,7 +268,19 @@ fun UploadCard(
     }
 }
 
-
+fun getFileName(context: Context, uri: Uri): String {
+    var name: String? = null
+    val cursor = context.contentResolver.query(uri, null, null, null, null)
+    cursor?.use {
+        if (it.moveToFirst()) {
+            val nameIndex = it.getColumnIndex(OpenableColumns.DISPLAY_NAME)
+            if (nameIndex != -1) {
+                name = it.getString(nameIndex)
+            }
+        }
+    }
+    return name ?: "unknown_file"
+}
 
 /*
 

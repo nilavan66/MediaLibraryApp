@@ -8,13 +8,13 @@ import android.net.NetworkCapabilities
 import android.os.Parcelable
 import android.provider.Settings
 import java.text.SimpleDateFormat
+import java.util.Date
 import java.util.Locale
 
 fun Context.hasNetworkConnection(): Boolean {
     val connectivityManager =
         getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
     var isConnected = false
-    // Retrieve current status of connectivity
     connectivityManager.allNetworks.forEach { network ->
         val networkCapability = connectivityManager.getNetworkCapabilities(network)
         networkCapability?.let {
@@ -54,11 +54,6 @@ fun String.isValidEmail(): Boolean {
     val emailPattern = "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$"
     return this.matches(emailPattern.toRegex())
 }
-/*
-fun String.isValidPassword(): Boolean {
-    val passwordPattern = "^(?=.*[A-Z])(?=.*[a-z])(?=.*\\d)(?=.*[@#\$%^&+=!]).{8,}$"
-    return this.matches(passwordPattern.toRegex())
-}*/
 
 fun String.validatePassword(): String? {
     return when {
@@ -67,7 +62,7 @@ fun String.validatePassword(): String? {
         !this.any { it.isLowerCase() } -> "Password must contain at least one lowercase letter"
         !this.any { it.isDigit() } -> "Password must contain at least one digit"
         !this.any { it in "@#\$%^&+=!" } -> "Password must contain at least one special character (@#\$%^&+=!)"
-        else -> null // Password is valid
+        else -> null
     }
 }
 
@@ -78,4 +73,23 @@ fun String.parseDateToMillis(): Long {
     } catch (e: Exception) {
         0L
     }
+}
+
+fun Long.toReadableSize(): String {
+    val kb = 1024
+    val mb = kb * 1024
+    val gb = mb * 1024
+
+    return when {
+        this < kb -> "$this B"
+        this < mb -> "%.2f KB".format(this.toDouble() / kb)
+        this < gb -> "%.2f MB".format(this.toDouble() / mb)
+        else -> "%.2f GB".format(this.toDouble() / gb)
+    }
+}
+
+fun Long.toFormattedDate(): String {
+    val date = Date(this * 1000)
+    val dateFormat = SimpleDateFormat("dd/MM/yyyy hh:mm a", Locale.getDefault())
+    return dateFormat.format(date)
 }

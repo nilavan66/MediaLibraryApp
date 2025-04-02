@@ -48,13 +48,11 @@ class FirebaseAuthRepository @Inject constructor(
         ) {
             override suspend fun fetchData(): Boolean {
                 firebaseAuth.signOut()
-                //sharedPrefManager.clearData()
-
                 return firebaseAuth.currentUser == null
             }
         }.asFlow()
     }
 
 }
-//fun logout(baseFlow: MutableSharedFlow<BaseState>?) {}
+
 

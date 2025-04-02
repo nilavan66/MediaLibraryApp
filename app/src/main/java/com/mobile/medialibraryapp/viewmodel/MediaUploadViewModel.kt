@@ -13,6 +13,12 @@ class MediaUploadViewModel @Inject constructor(
     private val storage: FirebaseStorage,
 ) : BaseViewModel<MediaUploadState>() {
 
+    private var setMediaUploadState: MediaUploadState = MediaUploadState.Init
+        set(value) {
+            field = value
+            setState(setMediaUploadState)
+        }
+
     private val _uploadProgress = MutableStateFlow(0f)
     val uploadProgress: StateFlow<Float> = _uploadProgress
 
@@ -23,16 +29,20 @@ class MediaUploadViewModel @Inject constructor(
         _permissionGranted.value = granted
     }
 
-    fun uploadMedia(uri: Uri) {
-        val fileName = "${uri.lastPathSegment}"
-        val storageRef = storage.reference.child("media_files/$fileName")
+
+    fun uploadMedia(uri: Uri, selectedFileName: String) {
+
+        val storageRef = storage.reference.child("media_files/$selectedFileName")
+        showToast("Uploading $selectedFileName")
 
         val uploadTask = storageRef.putFile(uri)
 
         uploadTask.addOnProgressListener { taskSnapshot ->
-            _uploadProgress.value = taskSnapshot.bytesTransferred.toFloat() / taskSnapshot.totalByteCount
+            _uploadProgress.value =
+                taskSnapshot.bytesTransferred.toFloat() / taskSnapshot.totalByteCount
         }.addOnSuccessListener {
             showToast("Upload Successful. Metadata will be saved automatically.")
+            setMediaUploadState = MediaUploadState.Success
         }.addOnFailureListener {
             showToast("Upload failed")
         }

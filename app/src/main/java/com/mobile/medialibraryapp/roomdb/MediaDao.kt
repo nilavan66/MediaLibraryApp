@@ -1,5 +1,6 @@
 package com.mobile.medialibraryapp.roomdb
 
+import androidx.paging.PagingSource
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
@@ -9,6 +10,9 @@ import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface MediaDao {
+
+    @Query("SELECT * FROM media_table ORDER BY uploadDate DESC")
+    fun getPagedMedia(): PagingSource<Int, MediaEntity>
 
     @Query("SELECT * FROM media_table ORDER BY uploadDate DESC")
     fun getAllMedia(): Flow<List<MediaEntity>>
