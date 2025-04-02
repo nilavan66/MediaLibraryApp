@@ -28,7 +28,6 @@ class LoginViewModel @Inject constructor(private val authRepository: FirebaseAut
                 when (it) {
                     is State.Error -> {
                         showToast(it.message)
-
                     }
 
                     is State.Success -> {

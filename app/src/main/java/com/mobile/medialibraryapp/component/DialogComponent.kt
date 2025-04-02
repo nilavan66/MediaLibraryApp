@@ -34,7 +34,6 @@ import com.mobile.medialibraryapp.util.toReadableSize
 @Composable
 fun DialogComponent(showDialog: (Boolean) -> Unit, data: MediaEntity?) {
 
-    val interactionSource = remember { MutableInteractionSource() }
 
     Dialog(onDismissRequest = { showDialog(false) }) {
         Card(
@@ -48,7 +47,6 @@ fun DialogComponent(showDialog: (Boolean) -> Unit, data: MediaEntity?) {
                     .padding(PageDimension),
             ) {
                 val (close, content) = createRefs()
-
                 IconButton(onClick = { showDialog(false) },
                     modifier = Modifier.constrainAs(close) {
                         top.linkTo(parent.top)

@@ -70,7 +70,7 @@ fun String.parseDateToMillis(): Long {
     return try {
         val formatter = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale.getDefault())
         formatter.parse(this)?.time ?: 0L
-    } catch (e: Exception) {
+    } catch (_: Exception) {
         0L
     }
 }

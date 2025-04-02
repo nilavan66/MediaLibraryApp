@@ -27,13 +27,10 @@ class MediaGalleryViewModel @Inject constructor(private val authRepository: Fire
     private fun checkUserAuth() {
         val user = FirebaseAuth.getInstance().currentUser
         Timber.tag("AuthCheck").d("User: ${user?.uid ?: "Not logged in"}")
-
         if (user == null) {
-
             Timber.tag("AuthCheck").e("User is not authenticated!")
         }
     }
-
     fun logout() {
         showProgressBar()
         viewModelScope.launch {
@@ -48,7 +45,6 @@ class MediaGalleryViewModel @Inject constructor(private val authRepository: Fire
                         }
                         dismissProgressBar()
                     }
-
                     is State.Error -> {
                         showToast(it.message)
                         dismissProgressBar()

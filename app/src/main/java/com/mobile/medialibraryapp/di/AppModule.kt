@@ -1,22 +1,17 @@
 package com.mobile.medialibraryapp.di
 
-import android.app.Application
 import android.content.Context
-import androidx.media3.common.Player
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.room.Room
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
-import com.mobile.medialibraryapp.component.MetaDataReader
-import com.mobile.medialibraryapp.component.MetaDataReaderImpl
 import com.mobile.medialibraryapp.roomdb.MediaDao
 import com.mobile.medialibraryapp.roomdb.MediaDatabase
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
-import dagger.hilt.android.scopes.ViewModelScoped
 import dagger.hilt.components.SingletonComponent
 import javax.inject.Singleton
 

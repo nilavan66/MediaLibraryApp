@@ -83,8 +83,6 @@ fun MediaUploadScreen(navController: NavHostController) {
         }
     }
 
-
-
     BaseComponent(viewModel = viewModel, stateObserver = { state ->
         when (state) {
             is MediaUploadState.Success -> {
@@ -199,7 +197,6 @@ fun UploadCard(
         ) {
             Spacer(modifier = Modifier.weight(0.2f))
 
-
             Icon(
                 painterResource(id = R.drawable.ic_upload),
                 contentDescription = "Upload Icon",
@@ -208,7 +205,6 @@ fun UploadCard(
             )
 
             Spacer(modifier = Modifier.weight(0.2f))
-
 
             Text(
                 text = "Upload Media",

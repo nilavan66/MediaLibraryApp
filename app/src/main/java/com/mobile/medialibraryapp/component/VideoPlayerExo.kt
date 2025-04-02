@@ -17,6 +17,7 @@ import com.mobile.medialibraryapp.viewmodel.VideoViewModel
 
 @Composable
 fun VideoPlayerExo(
+    modifier: Modifier = Modifier,
     videoUrl: String,
     videoViewModel: VideoViewModel = hiltViewModel()
 ) {

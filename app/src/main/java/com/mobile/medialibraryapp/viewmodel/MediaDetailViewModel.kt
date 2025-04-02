@@ -11,6 +11,7 @@ import android.os.Build
 import android.os.Environment
 import androidx.annotation.RequiresApi
 import com.google.firebase.firestore.FirebaseFirestore
+import com.mobile.medialibraryapp.R
 import com.mobile.medialibraryapp.state.MediaDetailState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
@@ -22,8 +23,8 @@ class MediaDetailViewModel @Inject constructor(private val appContext: Applicati
     fun downloadFile(fileUrl: String, fileName: String) {
         try {
             val request = DownloadManager.Request(Uri.parse(fileUrl))
-                .setTitle(fileName)
-                .setDescription("Downloading...")
+                .setTitle(appContext.getString(R.string.app_name))
+                .setDescription("Downloading $fileName")
                 .setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)
                 .setAllowedOverMetered(true)
                 .setAllowedOverRoaming(true)
@@ -50,7 +51,7 @@ class MediaDetailViewModel @Inject constructor(private val appContext: Applicati
             firestore.collection("media_data").document(documentId)
                 .delete()
                 .addOnSuccessListener {
-                    showToast("Deleted from Firestore")
+                    showToast("Deleted Successfully")
                 }
                 .addOnFailureListener { e ->
                     showToast("Delete failed: ${e.message}")

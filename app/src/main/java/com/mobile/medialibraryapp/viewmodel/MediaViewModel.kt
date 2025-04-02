@@ -56,13 +56,8 @@ class MediaViewModel @Inject constructor(private val repository: MediaRepository
     }
 
 
-
     suspend fun getMediaById(documentId: String): MediaEntity? {
         return repository.getMediaById(documentId)
-    }
-
-    fun getAllMedia(): Flow<List<MediaEntity>> {
-        return repository.getAllMedia()
     }
 
     fun deleteAllMedia(){

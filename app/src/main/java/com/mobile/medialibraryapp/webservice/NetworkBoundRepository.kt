@@ -2,7 +2,6 @@ package com.mobile.medialibraryapp.webservice
 
 import android.content.Context
 import android.os.Looper
-import com.mobile.medialibraryapp.model.ErrorResponse
 import com.mobile.medialibraryapp.model.State
 import com.mobile.medialibraryapp.state.BaseState
 import com.mobile.medialibraryapp.util.Constants

@@ -29,12 +29,6 @@ class SharedPref @Inject constructor(@ApplicationContext private var context: Co
         editor?.apply()
     }
 
-    fun setSharedValue(key: String, value: Int) {
-        getPreferenceInstance()
-        val editor = preference?.edit()
-        editor?.putInt(key, value)
-        editor?.apply()
-    }
 
     fun clearSharedValue() {
         getPreferenceInstance()
@@ -43,18 +37,6 @@ class SharedPref @Inject constructor(@ApplicationContext private var context: Co
         editor?.apply()
     }
 
-    fun setSharedValue(key: String, value: Boolean) {
-        getPreferenceInstance()
-        val editor = preference?.edit()
-        editor?.putBoolean(key, value)
-        editor?.apply()
-    }
-
-
-    fun getBooleanValue(key: String): Boolean? {
-        getPreferenceInstance()
-        return preference?.getBoolean(key, false)
-    }
 
 
     fun getStringValue(key: String): String {
@@ -62,9 +44,6 @@ class SharedPref @Inject constructor(@ApplicationContext private var context: Co
         return preference?.getString(key, "") ?: ""
     }
 
-    fun getIntValue(key: String): Int {
-        getPreferenceInstance()
-        return preference?.getInt(key, -1) ?: -1
-    }
+
 
 }
